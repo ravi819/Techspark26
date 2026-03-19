@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hackathon Certificate - BLDE ASP College</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Cinzel:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  background:#0a0a12;
+  display:flex;flex-direction:column;align-items:center;
+  min-height:100vh;font-family:'DM Sans',sans-serif;padding:28px 16px;
+  background-image:radial-gradient(ellipse at 20% 20%,#1a1a2e,transparent 50%),
+                   radial-gradient(ellipse at 80% 80%,#16213e,transparent 50%);
+}
+
+/* ═══ PANEL ═══ */
+.panel{width:100%;max-width:940px;margin-bottom:28px;background:#12121e;border:1px solid #2a2a40;border-radius:16px;overflow:hidden;}
+.panel-tabs{display:flex;background:#0d0d18;border-bottom:1px solid #2a2a40;}
+.tab-btn{flex:1;padding:13px 8px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#5a5a78;background:none;border:none;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;}
+.tab-btn.active{color:#c8a96e;border-bottom-color:#c8a96e;background:#12121e;}
+.tab-btn:hover:not(.active){color:#9a9ab8;background:#15151f;}
+
+.tab-pane{display:none;padding:22px 28px 20px;}
+.tab-pane.active{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.tab-pane.themes-pane{display:none;padding:22px 28px 24px;flex-direction:column;gap:16px;}
+.tab-pane.themes-pane.active{display:flex;}
+.tab-pane.logos-pane{display:none;padding:22px 28px 24px;}
+.tab-pane.logos-pane.active{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+
+.panel-sec-title{grid-column:1/-1;color:#c8a96e;font-family:'Cinzel',serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;padding-bottom:10px;border-bottom:1px solid #2a2a40;margin-bottom:2px;}
+
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#5a5a78;}
+.field input,.field select{width:100%;background:#0a0a14;border:1px solid #2a2a40;border-radius:8px;color:#e0e0f0;font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 12px;outline:none;transition:border-color .2s;}
+.field input:focus,.field select:focus{border-color:#c8a96e;}
+.field select option{background:#12121e;}
+
+.actions{grid-column:1/-1;display:flex;gap:12px;margin-top:4px;align-items:center;}
+.btn{padding:10px 26px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.5px;cursor:pointer;border:none;transition:all .2s;}
+.btn-gold{background:linear-gradient(135deg,#c8a96e,#e8c98a);color:#1a1000;}
+.btn-gold:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-out{background:transparent;border:1px solid #3a3a52;color:#7878a0;}
+.btn-out:hover{border-color:#c8a96e;color:#c8a96e;}
+.status-msg{font-size:11px;color:#5dbb8a;letter-spacing:1px;min-height:16px;}
+
+/* ═══ THEMES ═══ */
+.themes-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.theme-card{border:2px solid #2a2a40;border-radius:12px;padding:14px 10px 12px;cursor:pointer;transition:all .22s;text-align:center;background:#0d0d18;}
+.theme-card:hover{border-color:#6868a0;transform:translateY(-2px);}
+.theme-card.selected{border-color:#c8a96e;background:#1a1a10;}
+.theme-swatch{width:44px;height:44px;border-radius:50%;margin:0 auto 9px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.theme-name{font-size:11px;font-weight:500;color:#b0b0c8;letter-spacing:.5px;}
+
+/* ═══ LOGO UPLOAD ═══ */
+.logo-upload-box{border:2px dashed #2a2a40;border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:#0d0d18;position:relative;overflow:hidden;}
+.logo-upload-box:hover{border-color:#c8a96e;background:#111108;}
+.logo-upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.logo-preview{width:80px;height:80px;object-fit:contain;border-radius:8px;display:none;margin:0 auto 8px;}
+.logo-preview.visible{display:block;}
+.upload-icon{font-size:28px;color:#4a4a68;margin-bottom:6px;}
+.upload-text{font-size:11px;color:#5a5a78;letter-spacing:.5px;}
+.upload-hint{font-size:10px;color:#3a3a50;margin-top:4px;}
+.logo-clear{display:none;margin-top:8px;background:#2a1a1a;border:1px solid #5a2a2a;color:#c87070;border-radius:6px;padding:4px 14px;font-size:11px;cursor:pointer;}
+.logo-clear.visible{display:inline-block;}
+.logo-slot-title{font-size:11px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:#7878a0;margin-bottom:8px;}
+
+/* ═══ CERTIFICATE ═══ */
+.cert-wrapper{width:100%;max-width:940px;}
+
+#cert-area{
+  width:100%;aspect-ratio:1.414/1;position:relative;overflow:hidden;
+  display:flex;align-items:stretch;
+  box-shadow:0 48px 96px rgba(0,0,0,.7);
+  transition:background .4s;
+}
+
+.top-bar,.bot-bar{position:absolute;left:0;right:0;height:5px;z-index:20;}
+.top-bar{top:0;}.bot-bar{bottom:0;}
+.side-bar{position:absolute;top:26px;bottom:26px;width:4px;z-index:20;}
+.side-bar.l{left:26px;}.side-bar.r{right:26px;}
+.cert-frame{position:absolute;inset:22px;pointer-events:none;z-index:15;}
+.cert-frame::before{content:'';position:absolute;inset:7px;border:.6px solid rgba(0,0,0,.12);}
+.corner{position:absolute;width:56px;height:56px;z-index:20;}
+.corner svg{width:100%;height:100%;}
+.corner.tl{top:16px;left:16px;}.corner.tr{top:16px;right:16px;transform:scaleX(-1);}
+.corner.bl{bottom:16px;left:16px;transform:scaleY(-1);}.corner.br{bottom:16px;right:16px;transform:scale(-1,-1);}
+.cert-bg{position:absolute;inset:0;}
+.cert-bg svg{width:100%;height:100%;position:absolute;inset:0;}
+
+/* Full-height flex layout */
+.cert-content{
+  position:relative;z-index:10;
+  display:flex;flex-direction:column;justify-content:space-between;
+  width:100%;height:100%;
+  padding:26px 44px 18px;
+}
+
+/* TOP ROW: logo | header | logo */
+.cert-header-row{
+  display:flex;align-items:center;gap:14px;width:100%;
+  border-bottom:1.5px solid var(--tc1,#c8a96e);
+  padding-bottom:10px;
+}
+.logo-zone{width:clamp(50px,7.5vw,80px);height:clamp(50px,7.5vw,80px);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.logo-zone img{max-width:100%;max-height:100%;object-fit:contain;display:none;border-radius:4px;}
+.logo-zone img.visible{display:block;}
+.logo-zone .logo-ph{width:100%;height:100%;border:1.5px dashed rgba(0,0,0,.18);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:clamp(7px,1vw,10px);color:rgba(0,0,0,.22);text-align:center;font-family:'DM Sans',sans-serif;line-height:1.4;}
+.cert-header-text{flex:1;text-align:center;}
+
+/* College header fonts — enlarged */
+.c-assoc{font-family:'DM Sans',sans-serif;font-size:clamp(9px,1.1vw,13px);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;}
+.c-name {font-family:'Cinzel',serif;font-size:clamp(13px,2.1vw,22px);letter-spacing:2px;text-transform:uppercase;font-weight:600;margin:3px 0 4px;}
+.c-addr {font-family:'DM Sans',sans-serif;font-size:clamp(7px,1vw,11px);letter-spacing:.4px;margin-bottom:2px;}
+.c-naac {font-family:'DM Sans',sans-serif;font-size:clamp(7px,.95vw,10px);font-style:italic;margin:2px 0 2px;}
+.c-meta {font-family:'DM Sans',sans-serif;font-size:clamp(6.5px,.85vw,9px);}
+
+/* MIDDLE: main body */
+.cert-middle{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 5%;}
+
+.divider{display:flex;align-items:center;justify-content:center;gap:10px;margin:4px auto;}
+.divider .ln{height:1px;width:72px;}
+.divider .ln-l{background:linear-gradient(to right,transparent,currentColor);}
+.divider .ln-r{background:linear-gradient(to left,transparent,currentColor);}
+.divider .dia{width:6px;height:6px;background:currentColor;transform:rotate(45deg);flex-shrink:0;}
+
+.cert-title{font-family:'Cinzel',serif;font-size:clamp(26px,4.8vw,48px);font-weight:600;letter-spacing:4px;line-height:1.1;margin:3px 0;}
+.cert-sub  {font-family:'DM Sans',sans-serif;font-size:clamp(7px,1.05vw,10.5px);letter-spacing:4px;text-transform:uppercase;margin-bottom:6px;}
+.pres-to   {font-family:'DM Sans',sans-serif;font-size:clamp(7.5px,1.1vw,11px);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
+.recip     {font-family:'Playfair Display',serif;font-size:clamp(22px,4.2vw,42px);font-weight:700;font-style:italic;line-height:1.1;margin-bottom:6px;}
+.body-txt  {font-family:'DM Sans',sans-serif;font-size:clamp(7px,1vw,10.5px);line-height:1.75;max-width:74%;margin:0 auto 7px;}
+.ev-name   {font-family:'Cinzel',serif;font-size:clamp(9px,1.5vw,15px);font-weight:600;letter-spacing:1.5px;}
+.badge     {display:inline-block;border-radius:40px;padding:4px 22px;font-family:'Cinzel',serif;font-size:clamp(7px,1vw,10px);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+
+/* BOTTOM: signatures */
+.cert-bottom{border-top:1.5px solid var(--tc1,#c8a96e);padding-top:9px;width:100%;}
+.sig-row{display:flex;justify-content:center;gap:8%;margin:0;}
+.sig-blk{text-align:center;min-width:110px;}
+.sig-line{width:100%;height:1px;margin-bottom:4px;}
+.sig-name{font-family:'Playfair Display',serif;font-size:clamp(7px,1vw,10px);font-style:italic;margin-bottom:1px;}
+.sig-role{font-family:'DM Sans',sans-serif;font-size:clamp(5.5px,.8vw,8px);letter-spacing:1.5px;text-transform:uppercase;}
+.meta-txt{font-family:'DM Sans',sans-serif;font-size:clamp(5.5px,.82vw,8px);letter-spacing:2px;text-transform:uppercase;}
+
+/* ═══ THEMES ═══ */
+[data-theme="gold"]   {--tc1:#c8a96e;--tc2:#e8c98a;--tc3:#b8860b;--tc4:#8a6830;--tbg:#faf8f3;--ttext:#1a1205;--tmid:#5a4e3a;--tgrey:#9a7e50;}
+[data-theme="royal"]  {--tc1:#1a56a0;--tc2:#3080d8;--tc3:#0d3d7a;--tc4:#0a2d5e;--tbg:#f0f5ff;--ttext:#0a1e3d;--tmid:#1a3a6a;--tgrey:#4a6890;}
+[data-theme="emerald"]{--tc1:#1a7a4a;--tc2:#2aaa68;--tc3:#0f5e36;--tc4:#0a4228;--tbg:#f0fff5;--ttext:#0a1e14;--tmid:#1a4a30;--tgrey:#3a7a58;}
+[data-theme="purple"] {--tc1:#6a2ab8;--tc2:#9a52e0;--tc3:#4a1a90;--tc4:#360f6e;--tbg:#f8f0ff;--ttext:#1a0a2e;--tmid:#3a1a5a;--tgrey:#7a50a8;}
+[data-theme="crimson"]{--tc1:#a81a2a;--tc2:#d8304a;--tc3:#820f1e;--tc4:#5e0814;--tbg:#fff0f2;--ttext:#1e0508;--tmid:#4a1a20;--tgrey:#8a4050;}
+
+#cert-area{background:var(--tbg,#faf8f3);}
+.top-bar,.bot-bar{background:linear-gradient(90deg,var(--tc1),var(--tc2) 30%,var(--tc1) 50%,var(--tc2) 70%,var(--tc1));}
+.side-bar{background:linear-gradient(to bottom,transparent,var(--tc1) 20%,var(--tc1) 80%,transparent);}
+.cert-frame{border:2px solid var(--tc1);}
+.cert-frame::before{border:.5px solid rgba(0,0,0,.1);}
+.divider{color:var(--tc1);}
+.c-assoc{color:var(--tgrey);}
+.c-name {color:var(--tc4);}
+.c-addr {color:var(--tgrey);}
+.c-naac {color:var(--tc3);}
+.c-meta {color:var(--tgrey);}
+.cert-title{color:var(--ttext);}
+.cert-sub  {color:var(--tgrey);}
+.pres-to   {color:var(--tmid);}
+.recip     {color:var(--ttext);}
+.body-txt  {color:var(--tmid);}
+.ev-name   {color:var(--tc3);}
+.badge     {background:rgba(0,0,0,.04);border:1px solid var(--tc1);color:var(--tc4);}
+.sig-line  {background:var(--tc1);opacity:.5;}
+.sig-name  {color:var(--ttext);}
+.sig-role  {color:var(--tgrey);}
+.meta-txt  {color:var(--tgrey);}
+#o-num     {color:var(--tc3);}
+
+/* ═══ PRINT ═══ */
+/* Strategy: render cert at 940px (same as screen preview), scale body by 1.1941 to fill A4 landscape.
+   Fonts computed against 940px viewport stay identical to the preview — no shrinkage. */
+@media print{
+  @page{size:297mm 210mm;margin:0;}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;}
+  .panel{display:none!important;}
+  html{
+    width:1123px!important;
+    height:794px!important;
+    overflow:hidden!important;
+  }
+  body{
+    width:940px!important;
+    height:664px!important;
+    padding:0!important;margin:0!important;
+    background:white!important;
+    overflow:hidden!important;
+    transform:scale(1.1941)!important;
+    transform-origin:top left!important;
+    display:block!important;
+  }
+  .cert-wrapper{
+    width:940px!important;max-width:940px!important;
+    margin:0!important;padding:0!important;
+  }
+  #cert-area{
+    width:940px!important;height:664px!important;
+    aspect-ratio:unset!important;box-shadow:none!important;
+    overflow:hidden!important;
+    position:relative!important;
+  }
+  .cert-content{height:664px!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- PANEL -->
+<div class="panel">
+  <div class="panel-tabs">
+    <button class="tab-btn active" onclick="switchTab('details',this)">&#9998; Details</button>
+    <button class="tab-btn"        onclick="switchTab('themes',this)">&#9680; Themes</button>
+    <button class="tab-btn"        onclick="switchTab('logos',this)">&#128444; Logos</button>
+  </div>
+
+  <!-- TAB: DETAILS -->
+  <div id="tab-details" class="tab-pane active">
+    <div class="panel-sec-title">&#10022; Certificate Details</div>
+    <div class="field"><label>Hackathon / Event Name</label><input id="f-event" type="text" value="TECHSPARK 2K26"></div>
+    <div class="field"><label>Participant / Team Name</label><input id="f-name"  type="text" value="Arjun Sharma"></div>
+    <div class="field">
+      <label>Achievement / Award</label>
+      <select id="f-award">
+        <option value="Participation">Certificate of Participation</option>
+        <option value="Winner" selected>Winner</option>
+        <option value="Runner Up">Runner Up</option>
+        <option value="2nd Runner Up">2nd Runner Up</option>
+        <option value="Best Innovation">Best Innovation</option>
+        <option value="Best UI/UX">Best UI/UX</option>
+        <option value="Finalist">Finalist</option>
+      </select>
+    </div>
+    <div class="field"><label>Event Date</label><input id="f-date"      type="text" value="March 18-19, 2026"></div>
+    <div class="field"><label>Principal Name</label><input id="f-principal" type="text" value="Dr. S. B. Kamati"></div>
+    <div class="field"><label>Coordinator Name</label><input id="f-coord"    type="text" value="Smt. Bharati Naikawadi"></div>
+    <div class="field"><label>Certificate Number</label><input id="f-num"      type="text" value="TECH-2026-001"></div>
+    <div class="field"><label>Department</label><input id="f-dept"     type="text" value="Department of Computer Science"></div>
+    <div class="actions">
+      <button class="btn btn-gold" onclick="doUpdate()">&#8635;&nbsp; Update Certificate</button>
+      <button class="btn btn-out"  onclick="doPrint()">&#9113;&nbsp; Print / Save PDF</button>
+      <span class="status-msg" id="status-msg"></span>
+    </div>
+  </div>
+
+  <!-- TAB: THEMES -->
+  <div id="tab-themes" class="tab-pane themes-pane">
+    <div class="panel-sec-title">&#9680; Choose a Theme</div>
+    <div class="themes-grid">
+      <div class="theme-card selected" onclick="setTheme('gold',this)">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#c8a96e,#e8c98a);">&#127941;</div>
+        <div class="theme-name" style="color:#c8a96e;">Classic Gold</div>
+      </div>
+      <div class="theme-card" onclick="setTheme('royal',this)">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#1a56a0,#3080d8);">&#128081;</div>
+        <div class="theme-name" style="color:#3080d8;">Royal Blue</div>
+      </div>
+      <div class="theme-card" onclick="setTheme('emerald',this)">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#1a7a4a,#2aaa68);">&#9752;</div>
+        <div class="theme-name" style="color:#2aaa68;">Emerald Green</div>
+      </div>
+      <div class="theme-card" onclick="setTheme('purple',this)">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#6a2ab8,#9a52e0);">&#10024;</div>
+        <div class="theme-name" style="color:#9a52e0;">Deep Purple</div>
+      </div>
+      <div class="theme-card" onclick="setTheme('crimson',this)">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#a81a2a,#d8304a);">&#128150;</div>
+        <div class="theme-name" style="color:#d8304a;">Crimson Red</div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:#4a4a60;margin-top:14px;letter-spacing:.5px;">Theme changes apply instantly.</p>
+  </div>
+
+  <!-- TAB: LOGOS -->
+  <div id="tab-logos" class="tab-pane logos-pane">
+    <div class="panel-sec-title" style="grid-column:1/-1;">&#128444; Upload Logos</div>
+    <div>
+      <div class="logo-slot-title">&#9664; Left Logo (College)</div>
+      <div class="logo-upload-box" onclick="document.getElementById('inp-logo-left').click()">
+        <input type="file" id="inp-logo-left" accept="image/*" onchange="handleLogo('left',this)" onclick="event.stopPropagation()">
+        <img id="prev-left" class="logo-preview" src="" alt="">
+        <div id="icon-left" class="upload-icon">&#128444;</div>
+        <div class="upload-text">Click to upload</div>
+        <div class="upload-hint">PNG / JPG / SVG &nbsp;Max 2MB</div>
+      </div>
+      <button class="logo-clear" id="clr-left" onclick="clearLogo('left')">&#10005; Remove</button>
+    </div>
+    <div>
+      <div class="logo-slot-title">Right Logo (Event) &#9654;</div>
+      <div class="logo-upload-box" onclick="document.getElementById('inp-logo-right').click()">
+        <input type="file" id="inp-logo-right" accept="image/*" onchange="handleLogo('right',this)" onclick="event.stopPropagation()">
+        <img id="prev-right" class="logo-preview" src="" alt="">
+        <div id="icon-right" class="upload-icon">&#128444;</div>
+        <div class="upload-text">Click to upload</div>
+        <div class="upload-hint">PNG / JPG / SVG &nbsp;Max 2MB</div>
+      </div>
+      <button class="logo-clear" id="clr-right" onclick="clearLogo('right')">&#10005; Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- CERTIFICATE -->
+<div class="cert-wrapper">
+  <div id="cert-area" data-theme="gold">
+    <div class="top-bar"></div>
+    <div class="bot-bar"></div>
+    <div class="side-bar l"></div>
+    <div class="side-bar r"></div>
+
+    <!-- BG -->
+    <div class="cert-bg">
+      <svg id="bg-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 650" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <radialGradient id="bg-glo" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stop-color="#f5e9c8" stop-opacity=".9" id="glo-s1"/>
+            <stop offset="100%" stop-color="#faf8f3" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect id="bg-rect" width="920" height="650" fill="#faf8f3"/>
+        <ellipse cx="460" cy="325" rx="320" ry="215" fill="url(#bg-glo)"/>
+        <g id="bg-grid" opacity=".055" stroke="#8a6830" stroke-width=".5" fill="none">
+          <line x1="0" y1="108" x2="920" y2="108"/><line x1="0" y1="216" x2="920" y2="216"/>
+          <line x1="0" y1="430" x2="920" y2="430"/><line x1="0" y1="540" x2="920" y2="540"/>
+          <line x1="150" y1="0" x2="150" y2="650"/><line x1="320" y1="0" x2="320" y2="650"/>
+          <line x1="600" y1="0" x2="600" y2="650"/><line x1="770" y1="0" x2="770" y2="650"/>
+        </g>
+        <g id="bg-rose" transform="translate(460,325)" opacity=".05" stroke="#8a6830" fill="none">
+          <circle r="200" stroke-width=".5"/><circle r="155" stroke-width=".5"/><circle r="108" stroke-width=".5"/>
+          <line x1="-225" y1="0" x2="225" y2="0" stroke-width=".4"/>
+          <line x1="0" y1="-225" x2="0" y2="225" stroke-width=".4"/>
+          <line x1="-159" y1="-159" x2="159" y2="159" stroke-width=".3"/>
+          <line x1="159" y1="-159" x2="-159" y2="159" stroke-width=".3"/>
+        </g>
+        <g id="bg-dia" opacity=".04" fill="#c8a96e">
+          <polygon points="88,88 118,58 148,88 118,118"/>
+          <polygon points="772,88 802,58 832,88 802,118"/>
+          <polygon points="88,562 118,532 148,562 118,592"/>
+          <polygon points="772,562 802,532 832,562 802,592"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="cert-frame"></div>
+    <div class="corner tl"><svg viewBox="0 0 56 56" fill="none"><path d="M4 52L4 8Q4 4 8 4L52 4" stroke="#c8a96e" stroke-width="1.8" class="crs"/><path d="M11 52L11 15Q11 11 15 11L52 11" stroke="#c8a96e" stroke-width=".6" opacity=".5" class="crs"/><rect x="2" y="2" width="7" height="7" fill="#c8a96e" rx="1.5" class="crf"/><circle cx="18" cy="18" r="3.5" fill="none" stroke="#c8a96e" stroke-width="1.2" class="crs"/><circle cx="18" cy="18" r="1.2" fill="#c8a96e" class="crf"/></svg></div>
+    <div class="corner tr"><svg viewBox="0 0 56 56" fill="none"><path d="M4 52L4 8Q4 4 8 4L52 4" stroke="#c8a96e" stroke-width="1.8" class="crs"/><path d="M11 52L11 15Q11 11 15 11L52 11" stroke="#c8a96e" stroke-width=".6" opacity=".5" class="crs"/><rect x="2" y="2" width="7" height="7" fill="#c8a96e" rx="1.5" class="crf"/><circle cx="18" cy="18" r="3.5" fill="none" stroke="#c8a96e" stroke-width="1.2" class="crs"/><circle cx="18" cy="18" r="1.2" fill="#c8a96e" class="crf"/></svg></div>
+    <div class="corner bl"><svg viewBox="0 0 56 56" fill="none"><path d="M4 52L4 8Q4 4 8 4L52 4" stroke="#c8a96e" stroke-width="1.8" class="crs"/><path d="M11 52L11 15Q11 11 15 11L52 11" stroke="#c8a96e" stroke-width=".6" opacity=".5" class="crs"/><rect x="2" y="2" width="7" height="7" fill="#c8a96e" rx="1.5" class="crf"/><circle cx="18" cy="18" r="3.5" fill="none" stroke="#c8a96e" stroke-width="1.2" class="crs"/><circle cx="18" cy="18" r="1.2" fill="#c8a96e" class="crf"/></svg></div>
+    <div class="corner br"><svg viewBox="0 0 56 56" fill="none"><path d="M4 52L4 8Q4 4 8 4L52 4" stroke="#c8a96e" stroke-width="1.8" class="crs"/><path d="M11 52L11 15Q11 11 15 11L52 11" stroke="#c8a96e" stroke-width=".6" opacity=".5" class="crs"/><rect x="2" y="2" width="7" height="7" fill="#c8a96e" rx="1.5" class="crf"/><circle cx="18" cy="18" r="3.5" fill="none" stroke="#c8a96e" stroke-width="1.2" class="crs"/><circle cx="18" cy="18" r="1.2" fill="#c8a96e" class="crf"/></svg></div>
+
+    <!-- CONTENT -->
+    <div class="cert-content">
+
+      <!-- TOP: Logos + College Header -->
+      <div class="cert-header-row">
+        <div class="logo-zone" id="zone-left">
+          <img id="cert-logo-left" src="" alt="">
+          <div class="logo-ph">College<br>Logo</div>
+        </div>
+        <div class="cert-header-text">
+          <div class="c-assoc">B.L.D.E. Association&#8217;s</div>
+          <div class="c-name">A. S. Patil College of Commerce (Autonomous)</div>
+          <div class="c-addr">B. L. D. E. A&#8217;s New Campus, Shri. B. M. Patil Road, Vijayapur &#8211; 586103, Karnataka</div>
+          <div class="c-naac">Re-Accredited at &#8216;B++&#8217; Level by NAAC with CGPA 2.81 in 4th Cycle</div>
+          <div class="c-meta">AISHE Code: C-44849 &nbsp;|&nbsp; principal&#64;bldeaspcc&#46;ac&#46;in &nbsp;|&nbsp; www&#46;bldeaspcc&#46;ac&#46;in</div>
+        </div>
+        <div class="logo-zone" id="zone-right">
+          <img id="cert-logo-right" src="" alt="">
+          <div class="logo-ph">Event<br>Logo</div>
+        </div>
+      </div>
+
+      <!-- MIDDLE: Certificate Body -->
+      <div class="cert-middle">
+        <div class="cert-title">Certificate</div>
+        <div class="cert-sub" id="o-sub">of Achievement &nbsp;&middot;&nbsp; Winner</div>
+        <div class="divider" style="margin:5px auto 9px;">
+          <div class="ln ln-l" style="width:110px;"></div><div class="dia"></div><div class="ln ln-r" style="width:110px;"></div>
+        </div>
+        <div class="pres-to">This certificate is proudly presented to</div>
+        <div class="recip" id="o-name">Arjun Sharma</div>
+        <div class="body-txt" id="o-body">For outstanding performance and exceptional innovation demonstrated at <span class="ev-name" id="o-ev">TECHSPARK 2K26</span>, organised by the <span id="o-dept">Department of Computer Science</span>, A. S. Patil College of Commerce (Autonomous). Your dedication, creativity, and technical excellence have set a remarkable standard.</div>
+        <div class="badge" id="o-badge">&#11201; &nbsp; Winner &nbsp; &#11201;</div>
+      </div>
+
+      <!-- BOTTOM: Signatures -->
+      <div class="cert-bottom">
+        <div class="sig-row">
+          <div class="sig-blk">
+            <div class="sig-line"></div>
+            <div class="sig-name" id="o-prin">Dr. S. B. Kamati</div>
+            <div class="sig-role">Principal</div>
+          </div>
+          <div class="sig-blk" style="padding-top:2px;">
+            <div style="font-size:clamp(14px,2.2vw,22px);line-height:1;font-family:'Cinzel',serif;color:var(--tc1,#c8a96e);margin-bottom:3px;">&#10022;</div>
+            <div class="meta-txt" id="o-date">March 18-19, 2026</div>
+            <div class="meta-txt" id="o-num" style="margin-top:2px;">TECH-2026-001</div>
+          </div>
+          <div class="sig-blk">
+            <div class="sig-line"></div>
+            <div class="sig-name" id="o-coord">Smt. Bharati Naikawadi</div>
+            <div class="sig-role">Event Coordinator</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+window.onload = function() {
+
+  function ge(id){ return document.getElementById(id); }
+  function gv(id){ var e=ge(id); return (e && e.value) ? e.value.trim() : ''; }
+
+  /* Tab switching */
+  window.switchTab = function(name, btn) {
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    ge('tab-' + name).classList.add('active');
+  };
+
+  /* Theme colours */
+  window.TC = {
+    gold:    { c1:'#c8a96e', bg:'#faf8f3', grid:'#8a6830', glow:'#f5e9c8', dia:'#c8a96e' },
+    royal:   { c1:'#1a56a0', bg:'#f0f5ff', grid:'#1a3a6a', glow:'#d0e4ff', dia:'#1a56a0' },
+    emerald: { c1:'#1a7a4a', bg:'#f0fff5', grid:'#1a4a30', glow:'#c0eed8', dia:'#1a7a4a' },
+    purple:  { c1:'#6a2ab8', bg:'#f8f0ff', grid:'#3a1a5a', glow:'#dcc8ff', dia:'#6a2ab8' },
+    crimson: { c1:'#a81a2a', bg:'#fff0f2', grid:'#4a1a20', glow:'#ffd0d8', dia:'#a81a2a' }
+  };
+
+  window.setTheme = function(name, card) {
+    ge('cert-area').setAttribute('data-theme', name);
+    document.querySelectorAll('.theme-card').forEach(function(c){ c.classList.remove('selected'); });
+    if (card) card.classList.add('selected');
+    var t = window.TC[name];
+    if (!t) return;
+    ge('bg-rect').setAttribute('fill', t.bg);
+    var s1 = ge('glo-s1'); if (s1) s1.setAttribute('stop-color', t.glow);
+    document.querySelectorAll('#bg-grid line').forEach(function(l){ l.setAttribute('stroke', t.grid); });
+    document.querySelectorAll('#bg-rose circle, #bg-rose line').forEach(function(el){ el.setAttribute('stroke', t.grid); });
+    ge('bg-dia').setAttribute('fill', t.dia);
+    document.querySelectorAll('.crs').forEach(function(el){ el.setAttribute('stroke', t.c1); });
+    document.querySelectorAll('.crf').forEach(function(el){ el.setAttribute('fill', t.c1); });
+  };
+
+  /* Logo upload */
+  window.handleLogo = function(side, input) {
+    var file = input.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { alert('File too large. Max 2 MB.'); return; }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var src = e.target.result;
+      var prev = ge('prev-' + side);
+      prev.src = src; prev.classList.add('visible');
+      ge('icon-' + side).style.display = 'none';
+      ge('clr-' + side).classList.add('visible');
+      var certImg = ge('cert-logo-' + side);
+      certImg.src = src; certImg.classList.add('visible');
+      var ph = document.querySelector('#zone-' + side + ' .logo-ph');
+      if (ph) ph.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  };
+
+  window.clearLogo = function(side) {
+    var prev = ge('prev-' + side); prev.src = ''; prev.classList.remove('visible');
+    ge('icon-' + side).style.display = 'block';
+    ge('clr-' + side).classList.remove('visible');
+    ge('inp-logo-' + side).value = '';
+    var certImg = ge('cert-logo-' + side); certImg.src = ''; certImg.classList.remove('visible');
+    var ph = document.querySelector('#zone-' + side + ' .logo-ph');
+    if (ph) ph.style.display = 'flex';
+  };
+
+  /* Update certificate */
+  window.doUpdate = function() {
+    var ev    = gv('f-event')     || 'TECHSPARK 2K26';
+    var name  = gv('f-name')      || 'Participant Name';
+    var award = gv('f-award')     || 'Winner';
+    var date  = gv('f-date')      || 'March 18-19, 2026';
+    var prin  = gv('f-principal') || 'Dr. S. B. Kamati';
+    var coord = gv('f-coord')     || 'Smt. Bharati Naikawadi';
+    var num   = gv('f-num');
+    var dept  = gv('f-dept')      || 'Department of Computer Science';
+    var isP   = (award === 'Participation');
+
+    ge('o-sub').innerHTML    = isP ? 'of&nbsp;Participation' : 'of&nbsp;Achievement &nbsp;&middot;&nbsp; ' + award;
+    ge('o-badge').innerHTML  = '&#11201; &nbsp; ' + award + ' &nbsp; &#11201;';
+    ge('o-name').textContent  = name;
+    ge('o-prin').textContent  = prin;
+    ge('o-coord').textContent = coord;
+    ge('o-date').textContent  = date;
+    ge('o-num').textContent   = num || '';
+
+    var bodyTpl = isP
+      ? 'For enthusiastic participation and collaborative spirit demonstrated at <span class="ev-name" id="o-ev">{EV}</span>, organised by the <span id="o-dept">{DEPT}</span>, A. S. Patil College of Commerce (Autonomous). We commend your commitment to innovation and technology.'
+      : 'For outstanding performance and exceptional innovation demonstrated at <span class="ev-name" id="o-ev">{EV}</span>, organised by the <span id="o-dept">{DEPT}</span>, A. S. Patil College of Commerce (Autonomous). Your dedication, creativity, and technical excellence have set a remarkable standard.';
+    ge('o-body').innerHTML = bodyTpl.replace('{EV}', ev).replace('{DEPT}', dept);
+
+    var s = ge('status-msg');
+    s.innerHTML = '&#10003; Certificate updated!';
+    s.style.color = '#5dbb8a';
+    setTimeout(function(){ s.innerHTML = ''; }, 3000);
+  };
+
+  /* Print — no popup needed, works on GitHub Pages */
+  window.doPrint = function() {
+    window.print();
+  };
+
+  /* Enter key triggers update */
+  document.querySelectorAll('#tab-details input, #tab-details select').forEach(function(el) {
+    el.addEventListener('keydown', function(e) { if (e.key === 'Enter') window.doUpdate(); });
+  });
+
+  /* Init corner colours */
+  document.querySelectorAll('.crs').forEach(function(el){ el.setAttribute('stroke', '#c8a96e'); });
+  document.querySelectorAll('.crf').forEach(function(el){ el.setAttribute('fill',   '#c8a96e'); });
+
+  /* Auto-fill from URL parameters */
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var filled = false;
+
+    function sf(id, key) {
+      var val = params.get(key);
+      if (val) {
+        var el = ge(id);
+        if (el) { el.value = decodeURIComponent(val); filled = true; }
+      }
+    }
+
+    sf('f-name',      'name');
+    sf('f-event',     'event');
+    sf('f-date',      'date');
+    sf('f-principal', 'principal');
+    sf('f-coord',     'coord');
+    sf('f-num',       'num');
+    sf('f-dept',      'dept');
+
+    var award = params.get('award');
+    if (award) {
+      var sel = ge('f-award');
+      if (sel) {
+        for (var i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].value.toLowerCase() === award.toLowerCase()) {
+            sel.selectedIndex = i; filled = true; break;
+          }
+        }
+      }
+    }
+
+    var theme = params.get('theme');
+    if (theme && window.TC[theme]) {
+      /* find the matching theme card by its data-theme or by looping */
+      var cards = document.querySelectorAll('.theme-card');
+      for (var j = 0; j < cards.length; j++) {
+        var oc = cards[j].getAttribute('onclick') || '';
+        if (oc.indexOf("'" + theme + "'") !== -1) {
+          window.setTheme(theme, cards[j]); break;
+        }
+      }
+    }
+
+    if (filled) {
+      window.doUpdate();
+      if (params.get('view') === '1') {
+        var panel = document.querySelector('.panel');
+        if (panel) panel.style.display = 'none';
+        document.body.style.padding = '0';
+        document.body.style.background = '#fff';
+      }
+    }
+  })();
+
+}; /* end window.onload */
+</script>
+</body>
+</html>
